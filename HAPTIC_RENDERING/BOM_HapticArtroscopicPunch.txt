@@ -1,0 +1,13 @@
+Partslist for Haptic Punch:
+
+1) BGM2804 brushless DC motor
+2) AMT 102V rotary encoder
+3) Pololu 4mm shaft clamp
+4) 4mm precision shaft
+5) 4mm ball bearing
+6) Bolts (see CAD-model for details)
+7) 3D-printed parts (see cad model for details)
+
+8) 12V power supply
+9) Arduino DUE microcontroller
+10) SimpleFOC shield V.2.1

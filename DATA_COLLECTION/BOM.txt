@@ -1,0 +1,10 @@
+
+Partslist for prototype for data collection:
+
+1) Acufex 1.5 mm upbiter punch (no. 7207735)
+2) COM-09806 potentiometer
+3) FSR07CE force sensitive resistor
+4) 10kOhm resistor
+5) Jumper wires
+6) Arduino MKR Zero microcontroller
+7) 3D-printed parts (see CAD-folder)
