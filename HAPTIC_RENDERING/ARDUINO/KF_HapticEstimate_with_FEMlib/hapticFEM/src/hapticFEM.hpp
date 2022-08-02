@@ -27,9 +27,15 @@ public:
 
   RubberBand() 
   {
-    double k1 = 5.000;
-    double k2 = 3.333;
-    double k3 = -1.6667;
+
+    double le = (b-a)/N;
+    double k1 = (3/2)*(T/le);
+    double k2 = T/le;
+    double k3 = -T/(2*le);
+
+    //double k1 = 5.000;
+    //double k2 = 3.333;
+    //double k3 = -1.6667;
     double zero = 0;
 
     K.Fill(0.0);
@@ -92,9 +98,9 @@ public:
     BLA::Matrix<N> K_NEW = LUSolve(decomp, cX);   //Solving K*k_new = cX using LU decomposition. Equivalent to 'linsolve(K, cX)' in Matlab.  
     BLA::Matrix<1> KK = ~cX * K_NEW;
     BLA::Matrix<1> KK_INV = KK;
-    Invert(KK_INV);  //Invert matrix. Potentially computationally expensive(!)
+    Invert(KK_INV);  
     
-    BLA::Matrix<1> Fc = xPen*KK_INV;   // Could be done with scalars really.
+    BLA::Matrix<1> Fc = xPen*KK_INV;  
       Deformation<N> state;
       state.force = Fc(0);
 
@@ -119,7 +125,7 @@ private:
   //Rubberband variables
   double a = 0.5;  //Left fixpoint [m]
   double b = 2;    //Right fixpoint [m]
-  double T = 1;    //Tension 
+  double T = 1;    //Stiffness
   
   BLA::Matrix<N+1> xs;  //Define vector xs containing position of nodes
   BLA::Matrix<N> xm;  //Define vector xm containing position of element midpoints
