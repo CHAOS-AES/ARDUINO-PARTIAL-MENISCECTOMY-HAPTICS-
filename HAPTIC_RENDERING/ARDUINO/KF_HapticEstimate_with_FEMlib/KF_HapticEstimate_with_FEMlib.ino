@@ -38,6 +38,8 @@
   BLA::Matrix<2,2> Q = {7.0275, 0.02772, 0.2772, 6.1024}; //System covariance matrix
   BLA::Matrix<1> R_FEM = {0.001}; // Measurement variance from FEM
   BLA::Matrix<1> R_empirical = {7.742}; // Measurement variance from empirical measurements
+  //BLA::Matrix<1> R_empirical = {0.7742}; // Measurement variance from empirical measurements
+  //BLA::Matrix<1> R_empirical = {77.42}; // Measurement variance from empirical measurements
   BLA::Matrix<1> R = R_FEM;
 
   BLA::Matrix<2,2> A = {1, 1, 0, 1}; //System matrix
@@ -55,8 +57,10 @@
   float yieldForce = 7; // [N] Max FEM yield force
   float dTheta = 0;
   float xhDegPreviousStep = 0;
+  float forceMovingAvg = 0;
+  float forceMovingAvgLast = 0;
+  float forceMovingAvgLastLast = 0;
   BLA::Matrix<2,2> Pplus = {0, 0, 0, 0};
-
   BLA::Matrix<2,1> xhat = {0, 0}; // Initial conditions. Zero force, zero stiffness.
   
   
@@ -185,6 +189,8 @@ void setup() {
   
   rubber_band.setup();
 
+  //*************************************************************************************
+  //Start moving average calculation*****************************************************
   
 }
 
@@ -270,13 +276,19 @@ void loop() {
 
   float forceEstimate = xhat(0);
 
+  //Moving average filtering
+  forceMovingAvg = (forceMovingAvg + forceMovingAvgLast + forceMovingAvgLastLast)/3;
+  forceMovingAvgLast = forceMovingAvgLastLast;
+  forceMovingAvgLastLast = forceEstimate;
+
+
   //*************************************************************************************
   //CONVERT FORCE SIGNAL TO MOTOR CONTROL SIGNAL (VOLTAGE)*******************************
 
   // Mapping force to voltage
   //double target_voltage = -d.force*1.5; //CASE 1: Uncomment to use only FEM-signal for haptic signal
   //double target_voltage = -empForceMeasurement(0)*2.7; // CASE 2: Uncomment to use only Empirical signal.
-  double target_voltage = -forceEstimate*2.25; //CASE 3: Uncomment to use kalman filter estimation for haptic signal
+  double target_voltage = -forceMovingAvg*2.25; //CASE 3: Uncomment to use kalman filter estimation for haptic signal
 
   // Cap signal to prevent overloading the motor
   if(target_voltage < -12){
@@ -304,7 +316,7 @@ void loop() {
   double elapsedTime = currentMillis - previousMillis;
   
   if(elapsedTime >= ((1/visualRefreshRate)*1000)){
-  Serial.println(mesh); //<-----UNCOMMENT TO SEND TO PROCESSING
+  //Serial.println(mesh); //<-----UNCOMMENT TO SEND TO PROCESSING
   //Serial.println(elapsedTime);
   previousMillis = currentMillis; 
   
@@ -322,12 +334,14 @@ void loop() {
 //    Serial.print(xhDeg);
 //    Serial.print("\t");
 //
-//    Serial.print(FEMforceMeasurement);
-//    Serial.print("\t");
-//    Serial.print(empForceMeasurement(0));
-//    Serial.print("\t");
+    Serial.print(FEMforceMeasurement);
+    Serial.print("\t");
+    Serial.print(empForceMeasurement(0));
+    Serial.print("\t");
 //    Serial.print(forceEstimate);
 //    Serial.print("\t");
+    Serial.print(forceMovingAvg);
+    Serial.println("\t");    
 //    Serial.print(vh);
 //    Serial.print("\t");   
 //    Serial.print(micros());
