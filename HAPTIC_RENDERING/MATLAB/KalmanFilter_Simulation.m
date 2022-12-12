@@ -217,7 +217,7 @@ for i = 2:N
         %Use empirical data as measurement for haptic feedback
         force_measurement(i) = Force_random_cut_newtons(i);
         R = R_empirical;
-    
+        
         % Estimation using Kalman filter
         % Predict
         xhat  = Ad*xhat+B*u;               % Priori estimate
